@@ -1,9 +1,6 @@
-server:
-  port: 8080
-
 spring:
   application:
-    name: gateway-service
+    name: gateway
 
   cloud:
     gateway:
@@ -11,41 +8,13 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
-
-      # Default filter to propagate OAuth2 tokens downstream
       default-filters:
         - TokenRelay
-
       routes:
-        # User Service Routes
-        - id: user_service
-          uri: lb://user-service
-          predicates:
-            - Path=/api/users/**
-          filters:
-            - StripPrefix=1
-
-        # Seller Service Routes
         - id: seller_service
           uri: lb://seller-service
           predicates:
             - Path=/api/seller/**
-          filters:
-            - StripPrefix=1
-
-        # Product Service Routes (Future)
-        - id: product_service
-          uri: lb://product-service
-          predicates:
-            - Path=/api/products/**
-          filters:
-            - StripPrefix=1
-
-        # Order Service Routes (Future)
-        - id: order_service
-          uri: lb://order-service
-          predicates:
-            - Path=/api/orders/**
           filters:
             - StripPrefix=1
 
@@ -54,39 +23,26 @@ spring:
       client:
         provider:
           keycloak:
-            # Keycloak inside Docker Compose → host = keycloak, port = 8090
             issuer-uri: http://keycloak:8090/realms/padmini-farms
-          # if Keycloak is running locally outside Docker:
-          # issuer-uri: http://localhost:8090/realms/padmini-farms
-
         registration:
           keycloak:
             client-id: padmini-gateway
             client-secret: gateway-secret
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
-            scope: openid, profile, email, roles
-
       resourceserver:
         jwt:
           issuer-uri: http://keycloak:8090/realms/padmini-farms
 
 eureka:
   client:
-    register-with-eureka: true
-    fetch-registry: true
     service-url:
       defaultZone: http://discovery-server:8761/eureka/
-
   instance:
-    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${random.value}
+    prefer-ip-address: false
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-  endpoint:
-    health:
-      show-details: always
