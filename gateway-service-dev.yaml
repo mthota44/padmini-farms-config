@@ -23,7 +23,7 @@ spring:
       client:
         provider:
           keycloak:
-            issuer-uri: http://keycloak:8090/realms/padmini-farms
+            issuer-uri: http://padmini-keycloak:8090/realms/padmini-farms
         registration:
           keycloak:
             client-id: padmini-gateway
@@ -32,7 +32,7 @@ spring:
             redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8090/realms/padmini-farms
+          issuer-uri: http://padmini-keycloak:8090/realms/padmini-farms
 
 eureka:
   client:
